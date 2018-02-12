@@ -6,6 +6,10 @@ git clone https://github.com/aleclarson/lula.git --depth 1
 ln -s $PWD/lula/lula.sh ~/bin/lula
 ```
 
+**NOTE:** This is highly experimental. Only use this for top-level application packages. Things may be broken!
+
+Currently, this tool uses `luarocks` extensively. Please have it installed.
+
 ### package.lua
 
 You must create a `package.lua` file in the root directory of your project.
@@ -38,7 +42,8 @@ lula i
 
 ### Roadmap
 
-- Implement the "dependencies" feature
+- Support `lua_version` property
+- Support version locking for a dependency
 - Support adding a dependency via `lula install <git-url>`
 - Support adding a dependency by its luarocks name (by resolving it to a url)
 - Support passing extra arguments to `lula start` and `lula run`
