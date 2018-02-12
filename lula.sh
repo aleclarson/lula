@@ -1,47 +1,40 @@
+SELF_PATH=`readlink "$0"`
+export LULA_PATH=`dirname $SELF_PATH`
+
+# Shell functions
+. "$LULA_PATH/util.sh"
+
+# lula <command>
 CMD=${1:-start}; shift
 
-get_prop() {
-  SCRIPT="
-    package.path = '?.lua;' .. package.path
-    require('$PWD/package')
-    ok, res = pcall(function()
-      return $1 or ''
-    end)
-    if ok then print(res) end"
+# lula start
+start() {
+  CMD=`get_prop scripts.start` || "lua"
+  MAIN=`get_prop main` || "init.lua"
 
-  lua -e "$SCRIPT"
-}
-
-p() {
-  echo "  $@"
-}
-
-if [ ! -f "$PWD/package.lua" ]; then
-  p "Cannot find ./package.lua"
-  exit 1
-fi
-
-if [ $CMD == "install" ] || [ $CMD == "i" ]; then
-  p "lula install: not yet implemented"
-
-elif [ $CMD == "start" ]; then
-  CMD="$(get_prop scripts.start)"
-  CMD=${CMD:-lua}
-
-  MAIN=`get_prop main`
-  MAIN=${MAIN:-init.lua}
+  ENTRY="$(mktemp).lua"
+  echo "$(run_script "compile")" > "$ENTRY"
 
   echo ""
   printf "\e[1m$CMD $MAIN\n\e[0m"
   echo ""
 
-  eval "$CMD $MAIN"
+  trap "rm $ENTRY" EXIT
+  eval "$CMD $ENTRY"
+  echo ""
+  exit 0
+}
 
-elif [ $CMD == "run" ]; then
+# lula run
+run_cmd() {
   SCRIPT=$1
   if [ -z $SCRIPT ]; then
     p "Must provide a script name"
     exit 1
+  fi
+
+  if [ $SCRIPT == "start" ]; then
+    start
   fi
 
   CMD=`get_prop scripts.$SCRIPT`
@@ -55,7 +48,25 @@ elif [ $CMD == "run" ]; then
   echo ""
 
   eval "$CMD"
+}
 
-else
-  p "Unknown command: $CMD"
+# lula install
+install() {
+  p "lula install: not yet implemented"
+}
+
+# package.lua must exist
+if [ ! -f "$PWD/package.lua" ]; then
+  p "Cannot find ./package.lua"
+  exit 1
+fi
+
+# lua dependency paths
+export LUA_PATH="?.lua;?/init.lua;lib/?.lua;lib/?/init.lua;;"
+export LUA_CPATH=`echo "$LUA_PATH" | sed "s/lua;/so;/g"`
+
+if [ $CMD == "start" ]; then start
+elif [ $CMD == "run" ]; then run_cmd $@
+elif [ $CMD == "install" ] || [ $CMD == "i" ]; then install
+else p "Unknown command: $CMD"
 fi

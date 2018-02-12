@@ -2,8 +2,8 @@
 
 Try it:
 ```sh
-wget https://gist.githubusercontent.com/aleclarson/759b5600974c6a8073eff2e3eb81699f/raw/lula.sh -O ~/bin/lula
-chmod +x ~/bin/lula
+git clone https://github.com/aleclarson/lula.git --depth 1
+ln -s $PWD/lula/lula.sh ~/bin/lula
 ```
 
 ### package.lua
@@ -38,7 +38,6 @@ lula i
 
 ### Roadmap
 
-- Implement the "inject" feature
 - Implement the "dependencies" feature
 - Support adding a dependency via `lula install <git-url>`
 - Support adding a dependency by its luarocks name (by resolving it to a url)
