@@ -10,7 +10,7 @@ eval_package() {
 get_prop() {
   eval_package "
     pcall(function()
-      local val = $1
+      local val = $1 or '$2'
       if type(val) == 'table' then
         for _, val in pairs(val) do
           if val then print(val) end

@@ -9,8 +9,8 @@ CMD=${1:-start}; shift
 
 # lula start
 start() {
-  CMD=`get_prop scripts.start` || "lua"
-  MAIN=`get_prop main` || "init.lua"
+  CMD=`get_prop scripts.start lua`
+  MAIN=`get_prop main init.lua`
 
   ENTRY="$(mktemp).lua"
   echo "$(run_script "compile")" > "$ENTRY"
