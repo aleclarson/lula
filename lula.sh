@@ -104,7 +104,6 @@ install() {
     run_script "install" &> /dev/null
 
     # Remove luarocks directories.
-    mv "lib/lib/luarocks" "lib/.luarocks"
     rm -rf "lib/lib" "lib/share"
   fi
 }
