@@ -121,5 +121,5 @@ export LUA_CPATH=`echo "$LUA_PATH" | sed "s/lua;/so;/g"`
 if [ $CMD == "start" ]; then start
 elif [ $CMD == "run" ]; then run_cmd $@
 elif [ $CMD == "install" ] || [ $CMD == "i" ]; then install $@
-else p "Unknown command: $CMD"
+else run_cmd $CMD $@
 fi
