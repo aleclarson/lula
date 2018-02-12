@@ -101,7 +101,7 @@ install() {
   done
 
   if [ $? == 0 ]; then
-    run_script "install"
+    run_script "install" &> /dev/null
 
     # Remove luarocks directories.
     mv "lib/lib/luarocks" "lib/.luarocks"
