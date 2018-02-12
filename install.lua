@@ -57,7 +57,6 @@ return function(cwd)
     local spec, latest_version
     for file in read_dir(spec_dir) do
       local _, v = path.parse_name(file)
-      print('v => ' .. v)
       local ok, version = pcall(semver, v)
       if ok then
         is_latest = latest_version == nil or version > latest_version
