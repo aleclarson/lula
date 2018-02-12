@@ -25,6 +25,10 @@ The `main` option defaults to `init.lua`.
 
 The `scripts.start` option defaults to `lua`.
 
+The `dependencies` array may contain git URLs (with or without commit-ish)
+or luarocks package names. This allows fetching from `rock_servers` defined
+in the luarocks config file or any arbitrary git repository with a rockspec.
+
 ### Usage
 
 ```sh
@@ -40,6 +44,9 @@ lula install
 lula i
 ```
 
+The `LUA_PATH` and `LUA_CPATH` are setup automatically to ensure
+you can import modules from the ./lib directory.
+
 ### Roadmap
 
 - Support `lua_version` property
@@ -48,6 +55,7 @@ lula i
 - Support adding a dependency by its luarocks name (by resolving it to a url)
 - Support passing extra arguments to `lula start` and `lula run`
 - Let `scripts` contain pairs where the value is an array of commands
+- Support `lula test` for testing dependencies
 
 ### Example package.lua
 
@@ -57,7 +65,9 @@ inject = {
   "moonscript",
 }
 dependencies = {
+  "date",
   "https://github.com/tarantool/queue.git",
+  "https://github.com/tarantool/document.git#1.0.1",
 }
 scripts = {
   start = "tarantool",
