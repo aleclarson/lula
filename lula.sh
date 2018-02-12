@@ -54,6 +54,15 @@ install() {
   mkdir -p "lib/.rocks"
 
   get_prop "dependencies" | while read DEP; do
+
+    # Extract a trailing git tag.
+    GIT_TAG="${DEP##*#}"
+    if [ "$DEP" == "$GIT_TAG" ]; then
+      GIT_TAG=""
+    else
+      DEP="${DEP%#*}"
+    fi
+
     if [ "${DEP##*.}" == "git" ]; then
       GIT_URL="$DEP"
       DEP_NAME=`basename "$DEP" | cut -f 1 -d "."`
