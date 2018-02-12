@@ -88,20 +88,15 @@ install() {
       get_rockspec "$DEP_NAME"
       GIT_URL="$(eval_rockspec "$DEP_NAME" source.url)"
       GIT_TAG="$(eval_rockspec "$DEP_NAME" source.tag)"
-
-      p "+ $GIT_URL#$GIT_TAG"
-    else
-      GIT_TAG="${GIT_URL##*#}"
-
-      # Use 'master' if no tag exists.
-      if [ "$GIT_URL" == "$GIT_TAG" ]; then
-        GIT_TAG="master"
-      fi
-
-      p "+ $GIT_URL"
     fi
 
-    git clone "$GIT_URL" "$ROCK_PATH" -b "$GIT_TAG" --depth 1 &> /dev/null
+    if [ -z "$GIT_TAG" ]; then
+      p "+ $GIT_URL"
+    else
+      p "+ $GIT_URL#$GIT_TAG"
+    fi
+
+    git clone "$GIT_URL" "$ROCK_PATH" -b "${GIT_TAG:-master}" --depth 1 &> /dev/null
     rm -rf "$ROCK_PATH/.git"
   done
 
