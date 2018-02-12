@@ -2,23 +2,51 @@
 eval_package() {
   lua -e "
     package.path = '?.lua;' .. package.path
-    require('$PWD/package')
+    require('${2:-$PWD}/package')
     $1
   "
 }
 
 get_prop() {
   eval_package "
-    ok, res = pcall(function()
-      return $1 or ''
+    pcall(function()
+      local val = $1
+      if type(val) == 'table' then
+        for _, val in pairs(val) do
+          if val then print(val) end
+        end
+      elseif val then
+        print(val)
+      end
     end)
-    if ok then print(res) end
   "
 }
 
 run_script() {
-  eval_package "
-    require('$LULA_PATH/$1')
+  DIR="$PWD"
+  cd "$LULA_PATH"
+  eval_package "require('$1')('$DIR')" "$DIR"
+  cd "$DIR"
+}
+
+search_rocks() {
+  lua -e "
+    search = require('luarocks.search')
+    query = search.make_query('$1')
+    query.arch = '${2:-src}'
+    print(search.find_suitable_rock(query) or '')
+  "
+} 2> /dev/null
+
+get_rockspec() {
+  URL="$(search_rocks "$1" rockspec)"
+  echo "$(curl $URL -sS)" > "lib/.rocks/$1.rockspec"
+}
+
+eval_rockspec() {
+  lua -e "
+    $(cat lib/.rocks/$1.rockspec)
+    print($2 or '')
   "
 }
 

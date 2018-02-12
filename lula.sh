@@ -33,9 +33,7 @@ run_cmd() {
     exit 1
   fi
 
-  if [ $SCRIPT == "start" ]; then
-    start
-  fi
+  if [ $SCRIPT == "start" ]; then start; fi
 
   CMD=`get_prop scripts.$SCRIPT`
   if [ -z "$CMD" ]; then
@@ -52,7 +50,59 @@ run_cmd() {
 
 # lula install
 install() {
-  p "lula install: not yet implemented"
+  if [ "$1" == "-f" ]; then rm -rf lib; fi
+  mkdir -p "lib/.rocks"
+
+  get_prop "dependencies" | while read DEP; do
+    if [ "${DEP##*.}" == "git" ]; then
+      GIT_URL="$DEP"
+      DEP_NAME=`basename "$DEP" | cut -f 1 -d "."`
+    elif [[ "$DEP" = *"://"* ]]; then
+      p ""
+      p "Package URL must end with .git"
+      p "  $DEP"
+      p ""
+      exit 1
+    else
+      DEP_NAME="$DEP"
+      GIT_URL=""
+    fi
+
+    ROCK_PATH="lib/.rocks/$DEP_NAME"
+    if [ -e "$ROCK_PATH" ]; then
+      p "* $DEP"
+      continue
+    fi
+
+    # Fetch the rockspec if GIT_URL not provided.
+    if [ -z "$GIT_URL" ]; then
+      get_rockspec "$DEP_NAME"
+      GIT_URL="$(eval_rockspec "$DEP_NAME" source.url)"
+      GIT_TAG="$(eval_rockspec "$DEP_NAME" source.tag)"
+
+      p "+ $GIT_URL#$GIT_TAG"
+    else
+      GIT_TAG="${GIT_URL##*#}"
+
+      # Use 'master' if no tag exists.
+      if [ "$GIT_URL" == "$GIT_TAG" ]; then
+        GIT_TAG="master"
+      fi
+
+      p "+ $GIT_URL"
+    fi
+
+    git clone "$GIT_URL" "$ROCK_PATH" -b "$GIT_TAG" --depth 1 &> /dev/null
+    rm -rf "$ROCK_PATH/.git"
+  done
+
+  if [ $? == 0 ]; then
+    run_script "install"
+
+    # Remove luarocks directories.
+    mv "lib/lib/luarocks" "lib/.luarocks"
+    rm -rf "lib/lib" "lib/share"
+  fi
 }
 
 # package.lua must exist
@@ -67,6 +117,6 @@ export LUA_CPATH=`echo "$LUA_PATH" | sed "s/lua;/so;/g"`
 
 if [ $CMD == "start" ]; then start
 elif [ $CMD == "run" ]; then run_cmd $@
-elif [ $CMD == "install" ] || [ $CMD == "i" ]; then install
+elif [ $CMD == "install" ] || [ $CMD == "i" ]; then install $@
 else p "Unknown command: $CMD"
 fi
