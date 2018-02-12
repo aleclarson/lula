@@ -25,7 +25,10 @@ get_prop() {
 run_script() {
   DIR="$PWD"
   cd "$LULA_PATH"
-  eval_package "require('$1')('$DIR')" "$DIR"
+  eval_package "
+    local fn = require('$1')
+    if type(fn) == 'function' then fn('$DIR') end
+  " "$DIR"
   cd "$DIR"
 }
 
