@@ -1,4 +1,8 @@
 
+function string.ends(str, val)
+  return val == '' or string.sub(str, -string.len(val)) == val
+end
+
 local function read_dir(dir, opts)
   local cmd = 'ls'
 
