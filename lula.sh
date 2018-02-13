@@ -12,14 +12,21 @@ start() {
   CMD=`get_prop scripts.start lua`
   MAIN=`get_prop main init.lua`
 
-  ENTRY="$(mktemp).lua"
-  echo "$(run_script "compile")" > "$ENTRY"
+  INJECT=`eval_package "
+    if inject then print('true') end
+  "`
+  if [ ! -z "$INJECT" ]; then
+    ENTRY="$(mktemp).lua"
+    echo "$(run_script "compile")" > "$ENTRY"
+    trap "rm $ENTRY" EXIT
+  else
+    ENTRY="$MAIN"
+  fi
 
   echo ""
   printf "\e[1m$CMD $MAIN\n\e[0m"
   echo ""
 
-  trap "rm $ENTRY" EXIT
   eval "$CMD $ENTRY"
   echo ""
   exit 0
