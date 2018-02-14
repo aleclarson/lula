@@ -1,9 +1,9 @@
 local fs = require('luarocks.fs')
 local cfg = require('luarocks.cfg')
-local make = require('luarocks.make')
 local path = require('luarocks.path')
 local util = require('util')
 local semver = require('semver')
+local compat = require('compat')
 
 local LUA_VERSION = _VERSION:gsub("Lua (%d%.+)", "%1")
 
@@ -29,13 +29,11 @@ return function(cwd)
       end
     end
 
-    if spec == nil then
-      return
+    if spec then
+      fs.change_dir(dir)
+      compat.build_dep(spec_dir .. '/' .. spec)
+      fs.pop_dir()
     end
-
-    fs.change_dir(dir)
-    make.command({}, spec_dir .. '/' .. spec)
-    fs.pop_dir()
   end
 
   cfg.root_dir = cwd .. '/lib'
