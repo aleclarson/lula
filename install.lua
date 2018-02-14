@@ -15,18 +15,22 @@ return function(cwd)
   local rocks_dir = cwd .. '/lib/.rocks/'
   local function install_dep(dep)
     local dir = rocks_dir .. dep
-
-    local spec_dir = get_rockspec_dir(dir)
-    if spec_dir == nil then return end
+    local spec_dir = get_rockspec_dir(dir) or dir
 
     local spec, latest_version
     for file in util.read_dir(spec_dir) do
-      local _, v = path.parse_name(file)
-      local ok, version = pcall(semver, v)
-      if ok then
-        is_latest = latest_version == nil or version > latest_version
-        if is_latest then spec, latest_version = file, version end
+      if file:match('%.rockspec$') then
+        local _, v = path.parse_name(file)
+        local ok, version = pcall(semver, v)
+        if ok then
+          is_latest = latest_version == nil or version > latest_version
+          if is_latest then spec, latest_version = file, version end
+        end
       end
+    end
+
+    if spec == nil then
+      return
     end
 
     fs.change_dir(dir)
