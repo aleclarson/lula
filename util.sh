@@ -26,8 +26,11 @@ run_script() {
   ROOT="$PWD"
   cd "$LULA_PATH"
   eval_package "
-    local fn = require('$1')
-    if type(fn) == 'function' then fn('$ROOT/') end
+    require('debugger')
+    dbg.call(function()
+      local fn = require('$1')
+      if type(fn) == 'function' then fn('$ROOT/') end
+    end)
   "
   cd "$ROOT"
 }

@@ -32,6 +32,11 @@ start() {
     fi
   fi
 
+  # echo ">>>>>>"
+  # echo "$(run_script "compile")"
+  # echo "<<<<<<"
+  # exit 0
+
   export ENTRY="./__entry__.lua"
   echo "$(run_script "compile")" > "$ENTRY"
   trap "rm $PWD/$ENTRY" EXIT
@@ -121,7 +126,7 @@ install() {
   done
 
   if [ $? == 0 ]; then
-    run_script "install" &> /dev/null
+    run_script "install" # &> /dev/null
 
     # Remove luarocks directories.
     rm -rf "lib/lib" "lib/share"
