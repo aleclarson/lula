@@ -39,7 +39,7 @@ return function(cwd)
     fs.pop_dir()
   end
 
-  for file in read_dir(rocks_dir) do
+  for file in util.read_dir(rocks_dir) do
     install_dep(file)
   end
 end
