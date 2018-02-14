@@ -34,8 +34,7 @@ return function(cwd)
     end
   end
 
-  cfg.root_dir = cwd .. '/lib'
-  cfg.rocks_dir = cwd .. cfg.rocks_subdir
+  path.use_tree(cwd .. '/lib')
 
   for file in util.read_dir(rocks_dir) do
     install_dep(file)
