@@ -34,22 +34,26 @@ return function(cwd)
     end
 
     fs.change_dir(dir)
-    cfg.root_dir = cwd .. '/lib'
-    cfg.rocks_dir = cwd .. cfg.rocks_subdir
     make.command({}, spec_dir .. '/' .. spec)
-
-    -- Copy pure Lua dependencies into ./lib
-    local deps_dir = cfg.root_dir .. '/share/lua/' .. LUA_VERSION
-    fs.copy_contents(deps_dir, cfg.root_dir)
-
-    -- Copy compiled dependencies into ./lib
-    deps_dir = cfg.root_dir .. '/lib/lua/' .. LUA_VERSION
-    fs.copy_contents(deps_dir, cfg.root_dir)
-
     fs.pop_dir()
   end
 
+  cfg.root_dir = cwd .. '/lib'
+  cfg.rocks_dir = cwd .. cfg.rocks_subdir
+
   for file in util.read_dir(rocks_dir) do
     install_dep(file)
+  end
+
+  -- Copy pure Lua dependencies into ./lib
+  local deps_dir = cfg.root_dir .. '/share/lua/' .. LUA_VERSION
+  if util.path_exists(deps_dir) then
+    fs.copy_contents(deps_dir, cfg.root_dir)
+  end
+
+  -- Copy compiled dependencies into ./lib
+  deps_dir = cfg.root_dir .. '/lib/lua/' .. LUA_VERSION
+  if util.path_exists(deps_dir) then
+    fs.copy_contents(deps_dir, cfg.root_dir)
   end
 end
