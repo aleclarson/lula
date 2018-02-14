@@ -5,8 +5,6 @@ local util = require('util')
 local semver = require('semver')
 local compat = require('compat')
 
-local LUA_VERSION = _VERSION:gsub("Lua (%d%.+)", "%1")
-
 local function get_rockspec_dir(root_dir)
   return util.try_path(root_dir, 'rockspecs') or util.try_path(root_dir, 'rockspec')
 end
@@ -44,13 +42,13 @@ return function(cwd)
   end
 
   -- Copy pure Lua dependencies into ./lib
-  local deps_dir = cfg.root_dir .. '/share/lua/' .. LUA_VERSION
+  local deps_dir = cfg.root_dir .. '/share/lua/' .. cfg.lua_version
   if util.path_exists(deps_dir) then
     fs.copy_contents(deps_dir, cfg.root_dir)
   end
 
   -- Copy compiled dependencies into ./lib
-  deps_dir = cfg.root_dir .. '/lib/lua/' .. LUA_VERSION
+  deps_dir = cfg.root_dir .. '/lib/lua/' .. cfg.lua_version
   if util.path_exists(deps_dir) then
     fs.copy_contents(deps_dir, cfg.root_dir)
   end
