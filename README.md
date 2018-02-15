@@ -16,7 +16,8 @@ You must create a `package.lua` file in the root directory of your project.
 In it, you will declare a global variable for each configuration option you want to use.
 
 Here are the configuration options:
-- `main: string` Used as the 2nd argument when you run `lula` or `lula start`
+- `main: string` The entry script when running `scripts.start`
+- `root: string` The working directory when running `scripts.start`
 - `scripts: {}` Contains named shell scripts that you run with `lula run <name>`
 - `inject: {}` An array of module paths to require before your "main" path
 - `dependencies: {}` An array of git urls to shallow clone into the ./lib directory

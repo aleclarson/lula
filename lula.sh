@@ -23,6 +23,17 @@ start() {
     ENTRY="$MAIN"
   fi
 
+  ROOT=`get_prop root`
+  if [ ! -z "$ROOT" ]; then
+    if [ -d "$ROOT" ]; then
+      cd "$ROOT"
+      trap "cd -" EXIT
+    else
+      p "`package.root` must be a directory: '$ROOT'"
+      exit 1
+    fi
+  fi
+
   echo ""
   printf "\e[1m$CMD $MAIN\n\e[0m"
   echo ""
