@@ -6,6 +6,9 @@ return function(cwd)
     res = res .. 'require("' .. path:gsub('.lua', '') .. '")\n'
   end
 
+  -- Support for relative paths.
+  res = res .. util.read_file('loader.lua') .. '\n'
+
   if inject then
     for _, path in ipairs(inject) do
       if string.ends(path, '/*') then
