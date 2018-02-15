@@ -1,3 +1,4 @@
+local cwd = os.getenv('PWD') .. '/'
 
 -- Get parent directory.
 local function dirname(path)
@@ -5,11 +6,9 @@ local function dirname(path)
 end
 
 -- Resolve a relative path.
-local function resolve(caller, path)
-  local dir = dirname(caller)
+local function resolve(dir, path)
   if path:sub(1, 2) == './' then
-    if dir == nil then
-      return path:sub(3) end
+    if dir == '.' then return path end
     return dir .. path:sub(2)
   else
     local path, i = path:gsub('../', '')
@@ -18,31 +17,42 @@ local function resolve(caller, path)
       dir = dirname(dir)
       i = i - 1
     end
-    if dir == nil then
-      return path end
     return dir .. '/' .. path
   end
 end
 
 -- The relative path loader.
 local function relative(name)
-  if name:sub(1, 1) == '.' then
+  local ch = name:sub(1, 1)
+  local path = false
+
+  -- Use ./ or ../ to resolve relative to the caller.
+  if ch == '.' then
+    local caller
     local level = 3
 
     -- Loop past any C functions to get to the real caller.
     -- This avoids pcall(require, "path") getting "=C" as the source.
     repeat
-      caller = debug.getinfo(level, "S").source
+      caller = debug.getinfo(level, 'S').source
       level = level + 1
-    until caller ~= "=[C]"
+    until caller ~= '=[C]'
 
     -- The caller must be inside the working directory.
     if caller:sub(1, 3) == '@./' then
-      local path = resolve(caller:sub(4), name)
-      if path then return path end
-      error('module \'' .. name .. '\' not found', 2)
+      path = resolve(dirname(caller:sub(2)), name)
     end
+
+  -- Use ~/ to resolve relative to the working directory.
+  elseif ch == '~' then
+    path = resolve('.', '.' .. name:sub(2))
   end
+
+  if path ~= false then
+    if path ~= nil then return path end
+    error('module \'' .. name .. '\' not found', 2)
+  end
+
   return name
 end
 
@@ -51,3 +61,26 @@ local _require = require
 _G.require = function(name)
   return _require(relative(name))
 end
+
+-- Load a relative module.
+local function load_module(name)
+  local path = cwd .. name:sub(3)
+  local fh = io.open(path, 'rb')
+  if fh then
+    local code = fh:read('*all'), fh:close()
+    if code then
+      return loadstring(code, '@' .. name)
+    end
+  end
+end
+
+-- Relative modules need a dedicated loader to work as intended.
+table.insert(package.loaders, 2, function(name)
+  if name:sub(1, 2) == './' then
+    local module = load_module(name .. '.lua')
+      or load_module(name .. '/init.lua')
+
+    if module ~= nil then return module end
+    error('module \'' .. name .. '\' not found', 3)
+  end
+end)
