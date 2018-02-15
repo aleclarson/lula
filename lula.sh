@@ -122,7 +122,7 @@ if [ ! -f "$PWD/package.lua" ]; then
 fi
 
 # lua dependency paths
-export LUA_PATH="?.lua;?/init.lua;lib/?.lua;lib/?/init.lua;;"
+export LUA_PATH="lib/?.lua;lib/?/init.lua;;"
 export LUA_CPATH=`echo "$LUA_PATH" | sed "s/lua;/so;/g"`
 
 if [ $CMD == "start" ]; then start
