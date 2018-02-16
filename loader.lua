@@ -36,10 +36,11 @@ local function relative(name)
 
     -- Loop past any C functions to get to the real caller.
     -- This avoids pcall(require, "path") getting "=C" as the source.
-    repeat
+    while true do
       caller = debug.getinfo(level, 'S').source
+      if caller ~= '=[C]' then break end
       level = level + 1
-    until caller ~= '=[C]'
+    end
 
     -- The caller must be inside the working directory.
     if caller:sub(1, 3) == '@./' then
