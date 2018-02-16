@@ -14,6 +14,12 @@ start() {
   CMD=`get_prop scripts.start lua`
   MAIN=`get_prop main ./init.lua`
 
+  if [ -f ".env" ]; then
+    while read name value; do
+      declare -rx ${name}="$(eval "echo $value")"
+    done < ".env"
+  fi
+
   ROOT=`get_prop root`
   if [[ ! "$ROOT" = /* ]]; then
     if [[ "$ROOT" = ./* ]]; then
