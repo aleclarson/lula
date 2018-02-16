@@ -14,17 +14,6 @@ start() {
   CMD=`get_prop scripts.start lua`
   MAIN=`get_prop main ./init.lua`
 
-  INJECT=`eval_package "
-    if inject then print('true') end
-  "`
-  if [ ! -z "$INJECT" ]; then
-    ENTRY="$(mktemp).lua"
-    echo "$(run_script "compile")" > "$ENTRY"
-    trap "rm $ENTRY" EXIT
-  else
-    ENTRY="$MAIN"
-  fi
-
   ROOT=`get_prop root`
   if [[ ! "$ROOT" = /* ]]; then
     if [[ "$ROOT" = ./* ]]; then
@@ -42,6 +31,10 @@ start() {
       exit 1
     fi
   fi
+
+  export ENTRY="./__entry__.lua"
+  echo "$(run_script "compile")" > "$ENTRY"
+  trap "rm $PWD/$ENTRY" EXIT
 
   echo ""
   printf "\e[1m$CMD $MAIN\n\e[0m"
