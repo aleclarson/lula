@@ -2,7 +2,7 @@
 eval_package() {
   lua -e "
     package.path = '?.lua;' .. package.path
-    require('${2:-$PWD}/package')
+    require('$PACKAGE_DIR/package')
     $1
   "
 }

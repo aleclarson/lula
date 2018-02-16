@@ -128,8 +128,10 @@ install() {
   fi
 }
 
-# package.lua must exist
-if [ ! -f "$PWD/package.lua" ]; then
+# "package.lua" must exist in the working directory
+if [ -f "$PWD/package.lua" ]; then
+  export PACKAGE_DIR="$PWD"
+else
   p "Cannot find ./package.lua"
   exit 1
 fi
