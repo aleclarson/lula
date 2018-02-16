@@ -25,7 +25,7 @@ start() {
   if [ ! -z "$ROOT" ]; then
     if [ -d "$ROOT" ]; then
       cd "$ROOT"
-      trap "cd -" EXIT
+      trap "cd - > /dev/null" EXIT
     else
       p "`package.root` must be a directory: '$ROOT'"
       exit 1
