@@ -12,7 +12,7 @@ CMD=${1:-start}; shift
 # lula start
 start() {
   CMD=`get_prop scripts.start lua`
-  MAIN=`get_prop main init.lua`
+  MAIN=`get_prop main ./init.lua`
 
   INJECT=`eval_package "
     if inject then print('true') end
