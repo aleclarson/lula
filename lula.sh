@@ -26,6 +26,13 @@ start() {
   fi
 
   ROOT=`get_prop root`
+  if [[ ! "$ROOT" = /* ]]; then
+    if [[ "$ROOT" = ./* ]]; then
+      ROOT="$PWD/${ROOT:2}"
+    else
+      ROOT="$PWD/$ROOT"
+    fi
+  fi
   if [ ! -z "$ROOT" ]; then
     if [ -d "$ROOT" ]; then
       cd "$ROOT"
