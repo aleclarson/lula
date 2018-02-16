@@ -41,6 +41,11 @@ local function relative(name)
     -- The caller must be inside the working directory.
     if caller:sub(1, 3) == '@./' then
       path = resolve(dirname(caller:sub(2)), name)
+    else
+      -- You can't use relative paths outside the working directory.
+      local reason = 'illegal use of relative paths'
+      print('\n  ' .. reason .. ':\n  ' .. caller .. '\n')
+      error()
     end
 
   -- Use ~/ to resolve relative to the working directory.
