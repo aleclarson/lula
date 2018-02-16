@@ -21,6 +21,9 @@ local function resolve(dir, path)
   end
 end
 
+-- Save the original `name` for load errors.
+local orig_name
+
 -- The relative path loader.
 local function relative(name)
   local ch = name:sub(1, 1)
@@ -54,7 +57,10 @@ local function relative(name)
   end
 
   if path ~= false then
-    if path ~= nil then return path end
+    if path ~= nil then
+      orig_name = name
+      return path
+    end
     error('module \'' .. name .. '\' not found', 2)
   end
 
@@ -85,7 +91,10 @@ table.insert(package.loaders, 2, function(name)
     local module = load_module(name .. '.lua')
       or load_module(name .. '/init.lua')
 
-    if module ~= nil then return module end
-    error('module \'' .. name .. '\' not found', 3)
+    if module ~= nil then
+      orig_name = nil
+      return module
+    end
+    error('module \'' .. orig_name .. '\' not found', 3)
   end
 end)
