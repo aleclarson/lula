@@ -136,8 +136,7 @@ else
   exit 1
 fi
 
-# lua dependency paths
-export LUA_PATH="lib/?.lua;lib/?/init.lua;;"
+export LUA_PATH="$PWD/lib/?.lua;$PWD/lib/?/init.lua;;"
 export LUA_CPATH=`echo "$LUA_PATH" | sed "s/lua;/so;/g"`
 
 if [ $CMD == "start" ]; then start
