@@ -1,3 +1,5 @@
+#!/bin/bash
+
 SELF_PATH=`readlink "$0"`
 export LULA_PATH=`dirname $SELF_PATH`
 
