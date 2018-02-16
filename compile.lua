@@ -11,11 +11,18 @@ return function(cwd)
 
   if inject then
     for _, path in ipairs(inject) do
-      if string.ends(path, '/*') then
-        path = string.sub(path, 1, string.len(path) - 2)
-        for child in util.read_dir(cwd .. '/' .. path) do
+      if path:ends('/*') then
+        path = path:sub(1, #path - 2)
+
+        local dir = path
+        if path:match('^[%.~]/') then
+          dir = cwd .. path:sub(3)
+        end
+
+        for child in util.read_dir(dir) do
           addRequire(path .. '/' .. child)
         end
+
       else
         addRequire(path)
       end
