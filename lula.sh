@@ -3,6 +3,11 @@
 SELF_PATH=`readlink "$0"`
 export LULA_PATH=`dirname $SELF_PATH`
 
+ARGS="$*"
+flag_exists() {
+  echo "$ARGS" | grep "\s$1\b"
+}
+
 # Shell functions
 . "$LULA_PATH/util.sh"
 
@@ -127,7 +132,11 @@ install() {
   done
 
   if [ $? == 0 ]; then
-    run_script "install" &> /dev/null
+    if [ ! -z "$(flag_exists -v)" ]; then
+      run_script "install"
+    else
+      run_script "install" &> /dev/null
+    fi
 
     # Remove luarocks directories.
     rm -rf "lib/lib" "lib/share"
