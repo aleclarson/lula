@@ -17,14 +17,14 @@ return function(cwd)
     local dir = join(rocks_dir, dep)
     local spec_dir = get_rockspec_dir(dir) or dir
 
-    local spec, latest_version
+    local spec, latest
     for file in util.read_dir(spec_dir) do
       if file:match('%.rockspec$') then
         local _, v = path.parse_name(file)
         local ok, version = pcall(semver, v)
         if ok then
-          is_latest = latest_version == nil or version > latest_version
-          if is_latest then spec, latest_version = file, version end
+          local is_latest = latest == nil or version > latest
+          if is_latest then spec, latest = file, version end
         end
       end
     end
