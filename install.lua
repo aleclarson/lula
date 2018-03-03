@@ -1,6 +1,7 @@
 local fs = require('luarocks.fs')
 local cfg = require('luarocks.cfg')
 local path = require('luarocks.path')
+local util = require('luarocks.util')
 local semver = require('semver')
 local compat = require('compat')
 
@@ -35,7 +36,8 @@ return function(cwd)
 
     if spec then
       fs.change_dir(dir)
-      compat.build_dep(join(spec_dir, spec))
+      local ok, err = compat.build_dep(join(spec_dir, spec))
+      if not ok then util.printerr(err) end
       fs.pop_dir()
     end
   end

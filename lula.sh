@@ -135,7 +135,7 @@ install() {
     if [ ! -z "$(flag_exists -v)" ]; then
       run_script "install"
     else
-      run_script "install" &> /dev/null
+      run_script "install" > /dev/null
     fi
 
     # Remove luarocks directories.
