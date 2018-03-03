@@ -1,14 +1,18 @@
 local fs = require('luarocks.fs')
 local cfg = require('luarocks.cfg')
 local path = require('luarocks.path')
-local util = require('util')
 local semver = require('semver')
 local compat = require('compat')
 
 local join = require('luarocks.dir').path
 
+local function try_path(root_dir, dir)
+  local path = join(root_dir, dir)
+  if fs.exists(path) then return path end
+end
+
 local function get_rockspec_dir(root_dir)
-  return util.try_path(root_dir, 'rockspecs') or util.try_path(root_dir, 'rockspec')
+  return try_path(root_dir, 'rockspecs') or try_path(root_dir, 'rockspec')
 end
 
 return function(cwd)
@@ -18,7 +22,7 @@ return function(cwd)
     local spec_dir = get_rockspec_dir(dir) or dir
 
     local spec, latest
-    for file in util.read_dir(spec_dir) do
+    for file in fs.dir(spec_dir) do
       if file:match('%.rockspec$') then
         local _, v = path.parse_name(file)
         local ok, version = pcall(semver, v)
@@ -38,19 +42,19 @@ return function(cwd)
 
   path.use_tree(join(cwd, 'lib'))
 
-  for file in util.read_dir(rocks_dir) do
+  for file in fs.dir(rocks_dir) do
     install_dep(file)
   end
 
   -- Copy pure Lua dependencies into ./lib
   local deps_dir = join(cfg.root_dir, 'share/lua', cfg.lua_version)
-  if util.path_exists(deps_dir) then
+  if fs.is_dir(deps_dir) then
     fs.copy_contents(deps_dir, cfg.root_dir)
   end
 
   -- Copy compiled dependencies into ./lib
   deps_dir = join(cfg.root_dir, 'lib/lua', cfg.lua_version)
-  if util.path_exists(deps_dir) then
+  if fs.is_dir(deps_dir) then
     fs.copy_contents(deps_dir, cfg.root_dir)
   end
 end
