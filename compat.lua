@@ -1,9 +1,9 @@
 local cfg = require('luarocks.cfg')
+local deps = require('luarocks.deps')
 local make = require('luarocks.make')
-local semver = require('semver')
 
 local function ver(ver)
-  return semver(cfg.program_version) >= semver(ver)
+  return deps.parse_version(cfg.program_version) >= deps.parse_version(ver)
 end
 
 return {

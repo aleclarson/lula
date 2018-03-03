@@ -1,8 +1,8 @@
 local fs = require('luarocks.fs')
 local cfg = require('luarocks.cfg')
+local deps = require('luarocks.deps')
 local path = require('luarocks.path')
 local util = require('luarocks.util')
-local semver = require('semver')
 local compat = require('compat')
 
 local join = require('luarocks.dir').path
@@ -26,10 +26,8 @@ return function(cwd)
     for file in fs.dir(spec_dir) do
       if file:match('%.rockspec$') then
         local _, v = path.parse_name(file)
-        local ok, version = pcall(semver, v)
-        if ok then
-          local is_latest = latest == nil or version > latest
-          if is_latest then spec, latest = file, version end
+        if latest == nil or deps.compare_versions(v, latest) then
+          spec, latest = file, v
         end
       end
     end
