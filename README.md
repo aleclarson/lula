@@ -75,3 +75,27 @@ scripts = {
   clean = "rm data/backup/* &> /dev/null",
 }
 ```
+
+### Environment vars for dependencies
+
+If a dependency expects some environment variable during installation,
+you may get an error that tells you to pass it into `luarocks install`.
+
+I haven't found a solution for passing variables into a specific
+install command, but to expose variables to all install commmands,
+you *can* do the following:
+
+```sh
+export LUAROCKS_CONFIG="/path/to/config.lua"
+
+lula install
+```
+
+Your `config.lua` file will contain the following:
+
+```lua
+variables = {
+  FOO = "hello world",
+}
+```
+
