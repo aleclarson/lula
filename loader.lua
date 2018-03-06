@@ -11,7 +11,7 @@ local function resolve(dir, path)
     if dir == '.' then return path end
     return dir .. path:sub(2)
   else
-    local path, i = path:gsub('../', '')
+    local path, i = path:gsub('%.%./', '')
     while i > 0 do
       if dir == nil then return end
       dir = dirname(dir)
