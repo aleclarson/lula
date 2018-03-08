@@ -33,7 +33,7 @@ start() {
   fi
 
   # The compiler and loader need the module root.
-  export LULA_ROOT="$ROOT"
+  export ENTRY_DIR="$ROOT"
 
   ENTRY="$ROOT/__entry__.lua"
   echo "$(run_script "compile" "$ROOT")" > "$ENTRY"

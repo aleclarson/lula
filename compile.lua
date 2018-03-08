@@ -17,8 +17,8 @@ return function(cwd)
     res = res .. 'require("' .. path:gsub('.lua', '') .. '")\n'
   end
 
-  -- Relative paths use $LULA_ROOT.
-  local root = os.getenv('LULA_ROOT')
+  -- Relative paths use $ENTRY_DIR.
+  local root = os.getenv('ENTRY_DIR')
   if root ~= '.' then cwd = cwd .. root:sub(3) .. '/' end
 
   -- Support for relative paths.

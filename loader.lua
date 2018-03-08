@@ -3,7 +3,7 @@
 local cwd = os.getenv('PWD')
 
 -- All project-specific modules exist in here.
-local root = os.getenv('LULA_ROOT')
+local root = os.getenv('ENTRY_DIR')
 
 -- Get parent directory.
 local function dirname(path)
