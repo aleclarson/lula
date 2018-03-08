@@ -17,6 +17,10 @@ return function(cwd)
     res = res .. 'require("' .. path:gsub('.lua', '') .. '")\n'
   end
 
+  -- Relative paths use $LULA_ROOT.
+  local root = os.getenv('LULA_ROOT')
+  if root ~= '.' then cwd = cwd .. root:sub(3) .. '/' end
+
   -- Support for relative paths.
   res = res .. read_file('loader.lua') .. '\n'
 

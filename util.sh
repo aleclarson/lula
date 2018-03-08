@@ -23,13 +23,13 @@ get_prop() {
 }
 
 run_script() {
-  ROOT="$PWD"
+  CWD="$PWD"
   cd "$LULA_PATH"
   eval_package "
     local fn = require('$1')
-    if type(fn) == 'function' then fn('$ROOT/') end
+    if type(fn) == 'function' then fn('$CWD/') end
   "
-  cd "$ROOT"
+  cd "$CWD"
 }
 
 search_rocks() {

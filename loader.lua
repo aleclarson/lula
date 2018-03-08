@@ -1,8 +1,9 @@
-local fio = require('fio')
-local cwd = fio.cwd() .. '/'
 
--- Switch to run directory.
-fio.chdir(os.getenv('RUN_DIR'))
+-- The directory from which `lula` was called.
+local cwd = os.getenv('PWD')
+
+-- All project-specific modules exist in here.
+local root = os.getenv('LULA_ROOT')
 
 -- Get parent directory.
 local function dirname(path)
@@ -12,7 +13,6 @@ end
 -- Resolve a relative path.
 local function resolve(dir, path)
   if path:sub(1, 2) == './' then
-    if dir == '.' then return path end
     return dir .. path:sub(2)
   else
     local path, i = path:gsub('%.%./', '')
@@ -58,7 +58,7 @@ local function relative(name)
 
   -- Use ~/ to resolve relative to the working directory.
   elseif ch == '~' then
-    path = resolve('.', '.' .. name:sub(2))
+    path = resolve(root, '.' .. name:sub(2))
   end
 
   if path ~= false then
@@ -80,7 +80,7 @@ end
 
 -- Load a relative module.
 local function load_module(name)
-  local path = cwd .. name:sub(3)
+  local path = cwd .. name:sub(2)
   local fh = io.open(path, 'rb')
   if fh then
     local code = fh:read('*all'), fh:close()

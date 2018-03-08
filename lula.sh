@@ -17,7 +17,7 @@ CMD=${1:-start}; shift
 # lula start
 start() {
   CMD=`get_prop scripts.start lua`
-  MAIN=`get_prop main ./init.lua`
+  MAIN=`get_prop main init.lua`
 
   if [ -f ".env" ]; then
     while read name value; do
@@ -25,33 +25,22 @@ start() {
     done < ".env"
   fi
 
-  # Provide run directory to Lua.
-  export RUN_DIR="$PWD"
-
   ROOT=`get_prop root`
-  if [[ ! "$ROOT" = /* ]]; then
-    if [[ "$ROOT" = ./* ]]; then
-      ROOT="$PWD/${ROOT:2}"
-    else
-      ROOT="$PWD/$ROOT"
-    fi
-  fi
-  if [ ! -z "$ROOT" ]; then
-    if [ -d "$ROOT" ]; then
-      cd "$ROOT"
-      trap "cd - > /dev/null" EXIT
-    else
-      p "`package.root` must be a directory: '$ROOT'"
-      exit 1
-    fi
+  if [ -z "$ROOT" ]; then
+    ROOT="."
+  elif [[ ! "$ROOT" = ./* ]]; then
+    ROOT="./$ROOT"
   fi
 
-  export ENTRY="./__entry__.lua"
-  echo "$(run_script "compile")" > "$ENTRY"
-  trap "rm $PWD/$ENTRY" EXIT
+  # The compiler and loader need the module root.
+  export LULA_ROOT="$ROOT"
+
+  ENTRY="$ROOT/__entry__.lua"
+  echo "$(run_script "compile" "$ROOT")" > "$ENTRY"
+  trap "rm $ENTRY" EXIT
 
   echo ""
-  printf "\e[1m$CMD $MAIN\n\e[0m"
+  printf "\e[1m$CMD $ROOT/$MAIN\n\e[0m"
   echo ""
 
   eval "$CMD $ENTRY"
