@@ -40,6 +40,6 @@ return function(cwd)
     end
   end
 
-  addRequire(main or 'init.lua')
+  addRequire(main or './init')
   print(res)
 end

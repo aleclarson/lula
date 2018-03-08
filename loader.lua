@@ -1,4 +1,8 @@
-local cwd = os.getenv('PWD') .. '/'
+local fio = require('fio')
+local cwd = fio.cwd() .. '/'
+
+-- Switch to run directory.
+fio.chdir(os.getenv('RUN_DIR'))
 
 -- Get parent directory.
 local function dirname(path)

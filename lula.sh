@@ -25,6 +25,9 @@ start() {
     done < ".env"
   fi
 
+  # Provide run directory to Lua.
+  export RUN_DIR="$PWD"
+
   ROOT=`get_prop root`
   if [[ ! "$ROOT" = /* ]]; then
     if [[ "$ROOT" = ./* ]]; then
